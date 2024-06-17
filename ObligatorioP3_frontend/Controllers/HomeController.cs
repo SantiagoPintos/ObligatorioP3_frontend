@@ -14,7 +14,7 @@ namespace ObligatorioP3_frontend.Controllers
         private HttpClient _cliente;
         private string _url;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController()
         {
             _cliente = new HttpClient();
             _url = "http://localhost:5029/api/";
