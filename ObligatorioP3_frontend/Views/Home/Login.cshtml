@@ -1,0 +1,38 @@
+﻿@model ObligatorioP3_frontend.Models.UsuarioModel;
+@{
+    ViewData["Title"] = "Login";
+}
+
+@if (ViewBag.Mensaje != null)
+{
+    <div class="text-center alert-danger p-3">
+        @ViewBag.Mensaje
+    </div>
+}
+
+<h2 class="text-center">Inicio de sesión</h2>
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-12 w-50">
+            <form asp-action="Login" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-group">
+                    <label asp-for="Email" class="control-label">Email:</label>
+                    <input asp-for="Email" class="form-control" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Clave" class="control-label">Contraseña:</label>
+                    <input asp-for="Clave" class="form-control" />
+                    <span asp-validation-for="Clave" class="text-danger"></span>
+                </div>
+                <div class="form-group mt-2 text-center">
+                    <input type="submit" value="Iniciar sesión" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
