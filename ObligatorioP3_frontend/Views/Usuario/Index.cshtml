@@ -1,0 +1,18 @@
+﻿@{
+    ViewData["Title"] = "Index";
+}
+
+<h1 class="text-center">Bienvenido</h1>
+
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-12 text-center">            
+            <a asp-action="ListarUsuarios" class="btn btn-primary">Gestionar usuarios</a>
+            <a asp-action="ListarArticulos" class="btn btn-primary">Gestionar articulos</a>
+            <a asp-action="RedirectToCliente" class="btn btn-primary">Gestionar Clientes</a>
+            <a asp-controller="Pedido" asp-action="Index" class="btn btn-primary">Gestionar Pedidos</a>            
+            @ViewBag.Mensaje
+        </div>
+    </div>
+</div>
+
