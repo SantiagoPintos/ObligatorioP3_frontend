@@ -1,12 +1,11 @@
 ﻿@model ObligatorioP3_frontend.Models.MovimientoModel
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Registrar movimiento de stock";
 }
 
 <h1>Crear Movimiento</h1>
 
-<h4>MovimientoModel</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -61,10 +60,10 @@
 </div>
 
 <div>
-    <a asp-action="Index">Volver atras</a>
+    <a asp-controller="Usuario" asp-action="Index">Volver atras</a>
 </div>
 
-@if (ViewBag != null)
+@if (ViewBag.Mensaje != null)
 {    
     <div class="text-center alert-success p-3">
         @ViewBag.Mensaje
