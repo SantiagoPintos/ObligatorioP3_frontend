@@ -75,7 +75,7 @@ namespace ObligatorioP3_frontend.Controllers
                     HttpContext.Session.SetString("Token", usuario.Token);
                     return RedirectToAction("Index", "Usuario");
                 }
-                return View();
+                return RedirectToAction("Login", "Home", new { message = "Usuario o contraseña incorrectos" });
             } catch (Exception e)
             {
                 return RedirectToAction("Login", "Home", new { message = "Algo salió mal" });

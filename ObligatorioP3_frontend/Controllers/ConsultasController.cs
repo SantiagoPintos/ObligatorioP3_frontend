@@ -11,7 +11,7 @@ namespace ObligatorioP3_frontend.Controllers
         private string _url;
         private static IEnumerable<ArticuloModel> _articulos;
         private static IEnumerable<TipoMovimientoModel> _tiposMovimientos;
-
+        private static int _paginaActual;
 
         public ConsultasController()
         {
@@ -30,6 +30,7 @@ namespace ObligatorioP3_frontend.Controllers
             _cliente.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             // Listar articulos
             Uri uri = new Uri(_url + "Articulo");
+            if(_paginaActual < 1 ) _paginaActual = 1;
             HttpRequestMessage solicitud = new HttpRequestMessage(HttpMethod.Get, uri);
             Task<HttpResponseMessage> respuesta = _cliente.SendAsync(solicitud);
             respuesta.Wait();
@@ -55,13 +56,14 @@ namespace ObligatorioP3_frontend.Controllers
         }
 
         [HttpPost]
-        public ActionResult ObtenerMovimientos(int idArticulo, string tipoMovimientoNombre, int paginas)
+        public ActionResult ObtenerMovimientos(int idArticulo, string tipoMovimientoNombre)
         {
             string token = HttpContext.Session.GetString("Token");
             if (token == null) return RedirectToAction("Login", "Home");
             _cliente.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            if (_paginaActual < 1) _paginaActual = 1;
             // Listar movimientos por id y tipo de movimiento
-            Uri uri = new Uri(_url + "Consultas/" + "MovimientosIdTipo/" + idArticulo + "/" + tipoMovimientoNombre + "/" + paginas);
+            Uri uri = new Uri(_url + "Consultas/MovimientosIdTipo/" + idArticulo + "/" + tipoMovimientoNombre + "/" + _paginaActual);
             HttpRequestMessage solicitud = new HttpRequestMessage(HttpMethod.Get, uri);
             Task<HttpResponseMessage> respuesta = _cliente.SendAsync(solicitud);
             respuesta.Wait();
@@ -79,7 +81,49 @@ namespace ObligatorioP3_frontend.Controllers
             }
             return View();
 
-        }  
+        }
+
+        [HttpPost]
+        public ActionResult Next()
+        {
+            try
+            {
+                string mensaje = "";
+                _paginaActual++;
+                if (_paginaActual < 1)
+                {
+                    _paginaActual = 1;
+                    mensaje = "Página no válida";
+                }
+
+                return RedirectToAction("ObtenerMovimientos", new { mensaje = mensaje });
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("Index", "Usuario", new { mensajeError = "Algo salió mal" });
+            }
+        }
+
+        [HttpPost]
+        public ActionResult Previous()
+        {
+            try
+            {
+                string mensaje = "";
+                _paginaActual--;
+                if (_paginaActual < 1)
+                {
+                    _paginaActual = 1;
+                    mensaje = "Página no válida";
+                }
+
+                return RedirectToAction("ObtenerMovimientos", new { mensaje = mensaje });
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("Index", "Usuario", new { mensajeError = "Algo salió mal" });
+            }
+        }
 
         public ActionResult ObtenerMovimientosEntreFechas()
         {
