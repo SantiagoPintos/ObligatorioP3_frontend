@@ -1,0 +1,71 @@
+﻿@model MovimientoModel
+
+@if (ViewBag.movimientos != null)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Nombre de Articulo
+                </th>
+                <th>
+                    Id de tipo de movimiento
+                </th>
+                <th>
+                    Nombre de tipo de movimiento
+                </th>
+                <th>
+                    Signo de tipo de movimiento
+                </th>
+                <th>
+                    Fecha
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var movimiento in ViewBag.movimientos)
+            {
+                <tr>
+                    <td>
+                        @movimiento.Articulo.Nombre
+                    </td>
+                    <td>
+                        @movimiento.TipoMovimiento.Id
+                    </td>
+                    <td>
+                        @movimiento.TipoMovimiento.Nombre
+                    </td>
+                    <td>
+                        @movimiento.TipoMovimiento.Signo
+                    </td>
+                    <td>
+                        @movimiento.Fecha
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <form method="post" action="~/Consultas/Next">
+        <input type="submit" value="Siguiente" />
+    </form>
+    <form method="post" action="~/Consultas/Previous">
+        <input type="submit" value="Anterior">
+    </form>
+}
+@if (ViewBag.mensaje != null)
+{
+    <div class="text-center alert-success p-3">
+        @ViewBag.mensaje
+    </div>
+}
+@if (ViewBag.mensajeError != null)
+{
+    <div class="text-center alert-danger p-3">
+        @ViewBag.mensajeError
+    </div>
+}
+
+
+<div>
+    <a asp-controller="Consultas" class="btn btn-danger" asp-action="Index">Volver atras</a>
+</div>  
