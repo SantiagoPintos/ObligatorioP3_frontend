@@ -1,0 +1,41 @@
+﻿
+@{
+    ViewData["Title"] = "ResumenCantidadMovidas";
+}
+
+<h1>Resumen de Cantidad Movidas</h1>
+
+@if (ViewBag.mensajeError != null)
+{
+    <div class="text-center alert-danger p-3">
+        @ViewBag.mensajeError
+    </div>
+}
+
+
+
+
+    @if (ViewBag.resumenes != null)
+    {
+        <div class="d-flex">
+        @foreach (var resumen in ViewBag.resumenes)
+        {
+            <div class=" mx-5">
+            <h4>Año:</h4>
+            <h5 id="anio">@resumen.año</h5>
+            @foreach (var tipo in resumen.tipoMovimiento)
+            {
+                <h6>@tipo.Nombre</h6>
+                <label for="cantidad">Cantidad:</label>
+                <p id="cantidad">@tipo.cantidad</p>
+            }
+            <h5 for="suma">Suma:</h5>
+            <p id="suma">@resumen.suma</p>
+        </div>
+        }
+    </div>
+}
+
+
+
+
