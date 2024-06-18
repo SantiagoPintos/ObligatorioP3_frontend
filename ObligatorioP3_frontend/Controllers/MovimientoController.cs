@@ -40,7 +40,7 @@ namespace ObligatorioP3_frontend.Controllers
         }
 
         // GET: MovimientoController/Create
-        public ActionResult Create(string mensaje)
+        public ActionResult Create(string mensaje, string mensajeError)
         {
             
             string token = HttpContext.Session.GetString("Token");
@@ -69,6 +69,7 @@ namespace ObligatorioP3_frontend.Controllers
                 ViewBag.articulos = json;                
             }
             ViewBag.Mensaje = mensaje;
+            ViewBag.MensajeError = mensajeError;
             return View();
         }
 
@@ -124,11 +125,17 @@ namespace ObligatorioP3_frontend.Controllers
                 {
                     return RedirectToAction("Create", new { mensaje = "Creado exitosamente" });
                 }
-                return RedirectToAction("Index", "Usuario");
+                else
+                {
+                    var errorContent = respuesta.Result.Content.ReadAsStringAsync().Result;
+                    var errorMessage = JsonConvert.DeserializeObject<Dictionary<string, object>>(errorContent);
+                    string mensajeLimpio = errorMessage["errors"].ToString().Replace("{", "").Replace("}", "").Replace("[", "").Replace("]", "").Replace("\"", ""); 
+                    return RedirectToAction("Create", new { mensajeError = mensajeLimpio });
+                }
             }
-            catch
+            catch (Exception e)
             {
-                return View();
+                return RedirectToAction("Create", new { mensajeError = "Error al crear el movimiento: " + e.Message });
             }
         }
        

@@ -70,3 +70,10 @@
     </div>
 }
 
+@if (ViewBag.mensajeError != null)
+{
+    <div class="text-center alert-danger p-3">
+        @ViewBag.MensajeError
+    </div>
+}
+
