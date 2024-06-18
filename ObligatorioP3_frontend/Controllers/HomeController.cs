@@ -81,5 +81,12 @@ namespace ObligatorioP3_frontend.Controllers
                 return RedirectToAction("Login", "Home", new { message = "Algo salió mal" });
             }
         }
+
+
+        public ActionResult Logout()
+        {
+            HttpContext.Session.Clear();
+            return RedirectToAction("Login", "Home");
+        }
     }
 }
