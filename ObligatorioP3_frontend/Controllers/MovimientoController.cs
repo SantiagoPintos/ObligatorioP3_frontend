@@ -125,12 +125,14 @@ namespace ObligatorioP3_frontend.Controllers
                 {
                     return RedirectToAction("Create", new { mensaje = "Creado exitosamente" });
                 }
-                else
+                else if (respuesta.Result.StatusCode == System.Net.HttpStatusCode.BadRequest)
                 {
-                    var errorContent = respuesta.Result.Content.ReadAsStringAsync().Result;
-                    var errorMessage = JsonConvert.DeserializeObject<Dictionary<string, object>>(errorContent);
-                    string mensajeLimpio = errorMessage["errors"].ToString().Replace("{", "").Replace("}", "").Replace("[", "").Replace("]", "").Replace("\"", ""); 
-                    return RedirectToAction("Create", new { mensajeError = mensajeLimpio });
+                    return RedirectToAction("Create", new { mensajeError = "Datos incompletos" });
+                }
+                else
+                // 500
+                {
+                    return RedirectToAction("Create", new { mensajeError = "Algo salió mal" });
                 }
             }
             catch (Exception e)
