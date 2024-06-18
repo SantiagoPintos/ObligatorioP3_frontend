@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using ObligatorioP3_frontend.Models;
 using System.Net.Http.Headers;
 
 namespace ObligatorioP3_frontend.Controllers
@@ -110,7 +112,9 @@ namespace ObligatorioP3_frontend.Controllers
                 respuesta.Wait();
                 if (respuesta.Result.IsSuccessStatusCode)
                 {
-                    return View(respuesta.Result.Content);
+                    var objetoComoTexto = respuesta.Result.Content.ReadAsStringAsync().Result;
+                    var listaTiposDeMovimiento = JsonConvert.DeserializeObject<TipoMovimientoModel>(objetoComoTexto);
+                    return View(listaTiposDeMovimiento);
                 }
                 return RedirectToAction("Login", "Home");
             }
