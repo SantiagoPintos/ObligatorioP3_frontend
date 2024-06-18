@@ -1,0 +1,19 @@
+﻿
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1 class="text-center">Consultas de Movimientos</h1>
+
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-12 text-center">
+            <a asp-controller="Consultas" asp-action="ObtenerMovimientos" class="btn btn-primary">Obtener movimiento por id</a>
+            <a asp-controller="Consultas" asp-action="ObtenerMovimientosEntreFechas" class="btn btn-primary">Buscar movimiento entre fechas</a>
+            <a asp-controller="Consultas" asp-action="ResumenCantidadMovidas" class="btn btn-primary">Resumen de cantidad movidas</a>
+            @ViewBag.Mensaje
+        </div>
+    </div>
+</div>
+
+
