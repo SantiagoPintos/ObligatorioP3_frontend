@@ -14,6 +14,8 @@ namespace ObligatorioP3_frontend.Controllers
         private static int _paginaActual = -1;
         private static int _articuloId = -1;
         private static string _tipoMovimientoNombre = null;
+        private static int _paginado;
+        private static int _largoArticulos;
 
         public ConsultasController()
         {
@@ -66,30 +68,55 @@ namespace ObligatorioP3_frontend.Controllers
             _cliente.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             ViewBag.mensaje = mensaje;
             ViewBag.mensajeError = mensajeError;
-
+            if (idArticulo==0)
+            {
+                idArticulo = _articuloId;
+            }
+            if(String.IsNullOrEmpty(tipoMovimientoNombre))
+            {
+                tipoMovimientoNombre = _tipoMovimientoNombre;
+            }
             if(_articuloId == -1 ) _articuloId = idArticulo;
             if(String.IsNullOrEmpty(_tipoMovimientoNombre)) _tipoMovimientoNombre = tipoMovimientoNombre;
 
             if (_paginaActual < 1) _paginaActual = paginas;
-            // Listar movimientos por id y tipo de movimiento
+            
+            // Obtener todos los movimientos de ese articulo 
+            Uri uriArticulos = new Uri(_url + "Consultas/MovimientosDeArticulo/" + idArticulo + "/" + tipoMovimientoNombre);
+            HttpRequestMessage solicitudArticulos = new HttpRequestMessage(HttpMethod.Get, uriArticulos);
+            Task<HttpResponseMessage> respuestaArticulos = _cliente.SendAsync(solicitudArticulos);
+            respuestaArticulos.Wait();
+            // Obtener el paginado de los settings
+            Uri uriPaginado = new Uri(_url + "Settings/ObtenerPaginado");
+            HttpRequestMessage solicitudPaginado = new HttpRequestMessage(HttpMethod.Get, uriPaginado);
+            Task<HttpResponseMessage> respuestaPaginado = _cliente.SendAsync(solicitudPaginado);
+            respuestaPaginado.Wait();
 
-            Uri uri = new Uri(_url + "Consultas/MovimientosIdTipo/" + _articuloId + "/" + _tipoMovimientoNombre + "/" + _paginaActual);
+            // Listar movimientos por id y tipo de movimiento
+            Uri uri = new Uri(_url + "Consultas/MovimientosIdTipo/" + idArticulo + "/" + tipoMovimientoNombre + "/" + _paginaActual);
             HttpRequestMessage solicitud = new HttpRequestMessage(HttpMethod.Get, uri);
             Task<HttpResponseMessage> respuesta = _cliente.SendAsync(solicitud);
             respuesta.Wait();
-            if (respuesta.Result.IsSuccessStatusCode)
+            if (respuesta.Result.IsSuccessStatusCode && respuestaArticulos.Result.IsSuccessStatusCode && respuestaPaginado.Result.IsSuccessStatusCode)
             {
                 var objetoComoTexto = respuesta.Result.Content.ReadAsStringAsync().Result;
                 var json = JsonConvert.DeserializeObject<IEnumerable<MovimientoModel>>(objetoComoTexto);
+                var objetoComoTextoArticulos = respuestaArticulos.Result.Content.ReadAsStringAsync().Result;
+                var jsonArticulos = JsonConvert.DeserializeObject<IEnumerable<MovimientoModel>>(objetoComoTextoArticulos);
+                var objetoComoTextoPaginado = respuestaPaginado.Result.Content.ReadAsStringAsync().Result;
+                var jsonPaginado = JsonConvert.DeserializeObject<int>(objetoComoTextoPaginado);
                 if (json == null)
                 {
                     return RedirectToAction("ObtenerMovimientos", new { mensajeError = "No se encontraron movimientos" });
                 }
                 ViewBag.tipos = _tiposMovimientos;
                 ViewBag.articulos = _articulos;
-                ViewBag.movimientos = json;               
+                _largoArticulos = jsonArticulos.Count();
+                _paginado = jsonPaginado;
+                ViewBag.movimientos = json;
+                return View();
             }
-            return View();
+            return RedirectToAction("ObtenerMovimientos", new {mensajeError="Algo salio mal"});
 
         }
 
@@ -99,8 +126,11 @@ namespace ObligatorioP3_frontend.Controllers
             try
             {
                 string mensaje = "";
+                int paginas = _largoArticulos/_paginado;
+                if(_largoArticulos % _paginado != 0) paginas++;
+
                 _paginaActual++;
-                if (_paginaActual < 1)
+                if (_paginaActual > paginas)
                 {
                     _paginaActual = 1;
                     mensaje = "Página no válida";
