@@ -166,37 +166,110 @@ namespace ObligatorioP3_frontend.Controllers
             }
         }
 
-        public ActionResult ObtenerMovimientosEntreFechas()
+
+
+
+        [HttpPost]
+        public ActionResult NextBuscarEntreFechas()
         {
-            string token = HttpContext.Session.GetString("Token");
-            if (token == null) return RedirectToAction("Login", "Home");                   
-            return View();
+            try
+            {
+                string mensaje = "";
+                int paginas = _largoArticulos / _paginado;
+                if (_largoArticulos % _paginado != 0) paginas++;
+
+                _paginaActual++;
+                if (_paginaActual > paginas)
+                {
+                    _paginaActual = 1;
+                    mensaje = "Página no válida";
+                }
+
+                return RedirectToAction("ObtenerMovimientosEntreFechasBusqueda", new { mensajeError = mensaje });
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("Index", "Usuario", new { mensajeError = "Algo salió mal" });
+            }
         }
 
         [HttpPost]
-        public ActionResult ObtenerMovimientosEntreFechas(DateTime fechaInicial, DateTime fechaFinal, int paginas)
+        public ActionResult PreviousBuscarEntreFechas()
+        {
+            try
+            {
+                string mensaje = "";
+                _paginaActual--;
+                if (_paginaActual < 1)
+                {
+                    _paginaActual = 1;
+                    mensaje = "Página no válida";
+                }
+
+                return RedirectToAction("ObtenerMovimientosEntreFechasBusqueda", new { mensajeError = mensaje });
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("Index", "Usuario", new { mensajeError = "Algo salió mal" });
+            }
+        }
+
+
+
+
+
+
+        public ActionResult ObtenerMovimientosEntreFechas(string mensaje, string mensajError)
+        {
+            string token = HttpContext.Session.GetString("Token");
+            if (token == null) return RedirectToAction("Login", "Home");
+            ViewBag.mensaje = mensaje;
+            ViewBag.mensajeError = mensajError;
+            return View();
+        }
+     
+        public ActionResult ObtenerMovimientosEntreFechasBusqueda(DateTime fechaInicial, DateTime fechaFinal, int paginas, string mensaje, string mensajeError)
         {
             string fechaInicialFormateada = fechaInicial.ToString("dd-MM-yyyy");    
             string fechaFinalFormateada = fechaFinal.ToString("dd-MM-yyyy");
             string token = HttpContext.Session.GetString("Token");
             if (token == null) return RedirectToAction("Login", "Home");
+            if (_paginaActual < 1) _paginaActual = paginas;
+            ViewBag.mensajeError = mensajeError;
             _cliente.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             // Listar movimientos por id y tipo de movimiento
             Uri uri = new Uri(_url + "Consultas/" + "MovimientosEntreFechas/" + fechaInicialFormateada + "/" + fechaFinalFormateada);
             HttpRequestMessage solicitud = new HttpRequestMessage(HttpMethod.Get, uri);
             Task<HttpResponseMessage> respuesta = _cliente.SendAsync(solicitud);
             respuesta.Wait();
-            if (respuesta.Result.IsSuccessStatusCode)
+
+            // Obtener el paginado de los settings
+            Uri uriPaginado = new Uri(_url + "Settings/ObtenerPaginado");
+            HttpRequestMessage solicitudPaginado = new HttpRequestMessage(HttpMethod.Get, uriPaginado);
+            Task<HttpResponseMessage> respuestaPaginado = _cliente.SendAsync(solicitudPaginado);
+            respuestaPaginado.Wait();
+
+
+
+            if (respuesta.Result.IsSuccessStatusCode && respuestaPaginado.Result.IsSuccessStatusCode)
             {
                 var objetoComoTexto = respuesta.Result.Content.ReadAsStringAsync().Result;
                 var json = JsonConvert.DeserializeObject<IEnumerable<ArticuloModel>>(objetoComoTexto);
+                var objetoComoTextoPaginado = respuestaPaginado.Result.Content.ReadAsStringAsync().Result;
+                var jsonPaginado = JsonConvert.DeserializeObject<int>(objetoComoTextoPaginado);
                 if (json == null)
                 {
                     return RedirectToAction("ObtenerMovimientosEntreFechas", new { mensajeError = "No se encontraron movimientos" });
                 }
                 ViewBag.articulosAMostrar = json;
+                _largoArticulos = json.Count();
+                _paginado = jsonPaginado;                
+                ViewBag.paginado = _paginaActual;
+                ViewBag.mensaje = mensaje;
+                ViewBag.mensajeError = mensajeError;
+                return View();
             }
-            return View();
+            return RedirectToAction("ObtenerMovimientosEntreFechasBusqueda", new { mensajeError = "Algo salio mal" });
         }
 
 
