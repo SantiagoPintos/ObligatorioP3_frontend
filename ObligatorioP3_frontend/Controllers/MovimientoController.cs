@@ -127,7 +127,7 @@ namespace ObligatorioP3_frontend.Controllers
                 }
                 else if (respuesta.Result.StatusCode == System.Net.HttpStatusCode.BadRequest)
                 {
-                    return RedirectToAction("Create", new { mensajeError = "Datos incompletos" });
+                    return RedirectToAction("Create", new { mensajeError = "La cantidad es mayor al stock disponible" });
                 }
                 else
                 // 500

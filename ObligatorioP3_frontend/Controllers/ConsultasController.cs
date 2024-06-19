@@ -16,6 +16,8 @@ namespace ObligatorioP3_frontend.Controllers
         private static string _tipoMovimientoNombre = null;
         private static int _paginado;
         private static int _largoArticulos;
+        private static DateTime _fechaInicial;
+        private static DateTime _fechaFinal;
 
         public ConsultasController()
         {
@@ -185,7 +187,7 @@ namespace ObligatorioP3_frontend.Controllers
                     mensaje = "Página no válida";
                 }
 
-                return RedirectToAction("ObtenerMovimientosEntreFechasBusqueda", new { mensajeError = mensaje });
+                return RedirectToAction("ObtenerMovimientosEntreFechasBusqueda", new { mensajeError = mensaje, fechaInicial = _fechaInicial, fechaFinal = _fechaFinal, paginas = _paginaActual });
             }
             catch (Exception ex)
             {
@@ -206,7 +208,7 @@ namespace ObligatorioP3_frontend.Controllers
                     mensaje = "Página no válida";
                 }
 
-                return RedirectToAction("ObtenerMovimientosEntreFechasBusqueda", new { mensajeError = mensaje });
+                return RedirectToAction("ObtenerMovimientosEntreFechasBusqueda", new { mensajeError = mensaje, fechaInicial =  _fechaInicial, fechaFinal = _fechaFinal, paginas = _paginaActual });
             }
             catch (Exception ex)
             {
@@ -219,17 +221,20 @@ namespace ObligatorioP3_frontend.Controllers
 
 
 
-        public ActionResult ObtenerMovimientosEntreFechas(string mensaje, string mensajError)
+        public ActionResult ObtenerMovimientosEntreFechas(string mensaje, string mensajeError)
         {
             string token = HttpContext.Session.GetString("Token");
             if (token == null) return RedirectToAction("Login", "Home");
             ViewBag.mensaje = mensaje;
-            ViewBag.mensajeError = mensajError;
+            ViewBag.mensajeError = mensajeError;
+
             return View();
         }
      
         public ActionResult ObtenerMovimientosEntreFechasBusqueda(DateTime fechaInicial, DateTime fechaFinal, int paginas, string mensaje, string mensajeError)
         {
+            _fechaInicial = fechaInicial;
+            _fechaFinal = fechaFinal;
             string fechaInicialFormateada = fechaInicial.ToString("dd-MM-yyyy");    
             string fechaFinalFormateada = fechaFinal.ToString("dd-MM-yyyy");
             string token = HttpContext.Session.GetString("Token");
@@ -238,7 +243,7 @@ namespace ObligatorioP3_frontend.Controllers
             ViewBag.mensajeError = mensajeError;
             _cliente.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             // Listar movimientos por id y tipo de movimiento
-            Uri uri = new Uri(_url + "Consultas/" + "MovimientosEntreFechas/" + fechaInicialFormateada + "/" + fechaFinalFormateada);
+            Uri uri = new Uri(_url + "Consultas/" + "MovimientosEntreFechas/" + fechaInicialFormateada + "/" + fechaFinalFormateada + "/" + paginas); 
             HttpRequestMessage solicitud = new HttpRequestMessage(HttpMethod.Get, uri);
             Task<HttpResponseMessage> respuesta = _cliente.SendAsync(solicitud);
             respuesta.Wait();
@@ -249,27 +254,34 @@ namespace ObligatorioP3_frontend.Controllers
             Task<HttpResponseMessage> respuestaPaginado = _cliente.SendAsync(solicitudPaginado);
             respuestaPaginado.Wait();
 
+            // Obtener el IEnumerable con todos los articulos
+            Uri uriArticulos = new Uri(_url + "Consultas/" + "MovimientosEntreFechasCompleto/" + fechaInicialFormateada + "/" + fechaFinalFormateada);
+            HttpRequestMessage solicitudArticulos = new HttpRequestMessage(HttpMethod.Get, uriArticulos);
+            Task<HttpResponseMessage> respuestaArticulos = _cliente.SendAsync(solicitudArticulos);
+            respuestaArticulos.Wait();
 
 
-            if (respuesta.Result.IsSuccessStatusCode && respuestaPaginado.Result.IsSuccessStatusCode)
+            if (respuesta.Result.IsSuccessStatusCode && respuestaPaginado.Result.IsSuccessStatusCode && respuesta.Result.IsSuccessStatusCode)
             {
                 var objetoComoTexto = respuesta.Result.Content.ReadAsStringAsync().Result;
                 var json = JsonConvert.DeserializeObject<IEnumerable<ArticuloModel>>(objetoComoTexto);
                 var objetoComoTextoPaginado = respuestaPaginado.Result.Content.ReadAsStringAsync().Result;
                 var jsonPaginado = JsonConvert.DeserializeObject<int>(objetoComoTextoPaginado);
+                var objetoComoTextoArticulos = respuestaArticulos.Result.Content.ReadAsStringAsync().Result;
+                var jsonArticulos = JsonConvert.DeserializeObject<IEnumerable<MovimientoModel>>(objetoComoTextoArticulos);
                 if (json == null)
                 {
                     return RedirectToAction("ObtenerMovimientosEntreFechas", new { mensajeError = "No se encontraron movimientos" });
                 }
                 ViewBag.articulosAMostrar = json;
-                _largoArticulos = json.Count();
+                _largoArticulos = jsonArticulos.Count();
                 _paginado = jsonPaginado;                
-                ViewBag.paginado = _paginaActual;
+                ViewBag.pagina = _paginaActual;
                 ViewBag.mensaje = mensaje;
                 ViewBag.mensajeError = mensajeError;
                 return View();
             }
-            return RedirectToAction("ObtenerMovimientosEntreFechasBusqueda", new { mensajeError = "Algo salio mal" });
+            return RedirectToAction("ObtenerMovimientosEntreFechasBusqueda" , new { mensajeError = "Algo salio mal" });
         }
 
 

@@ -55,9 +55,6 @@
 }
 
 
-<div>
-    <a asp-controller="Consultas" class="btn btn-danger" asp-action="Index">Volver atras</a>
-</div>
 @if (ViewBag.mensaje != null)
 {
     <div class="text-center alert-success p-3">
@@ -70,3 +67,10 @@
         @ViewBag.mensajeError
     </div>
 }
+<div class="text-center">
+    <p class="text-center">Pagina: @ViewBag.pagina</p>
+</div>
+
+<div>
+    <a asp-controller="Consultas" class="btn btn-danger" asp-action="Index">Volver atras</a>
+</div>  
