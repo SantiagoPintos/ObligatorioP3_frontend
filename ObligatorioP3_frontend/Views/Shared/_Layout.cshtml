@@ -12,7 +12,7 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Obligatorio Programación 3 - Frontend</a>
+                <a class="navbar-brand" asp-area="" asp-controller="Usuario" asp-action="Index">Obligatorio Programación 3 - Frontend</a>
                 @if (Context.Session.GetString("Email") != null && Context.Session.GetString("Token") != null)
                 {
                     <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Logout">Cerrar sesión</a>
