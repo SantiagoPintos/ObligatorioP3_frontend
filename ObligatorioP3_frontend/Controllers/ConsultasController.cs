@@ -114,6 +114,7 @@ namespace ObligatorioP3_frontend.Controllers
                 _largoArticulos = jsonArticulos.Count();
                 _paginado = jsonPaginado;
                 ViewBag.movimientos = json;
+                ViewBag.paginado = _paginaActual;
                 return View();
             }
             return RedirectToAction("ObtenerMovimientos", new {mensajeError="Algo salio mal"});
