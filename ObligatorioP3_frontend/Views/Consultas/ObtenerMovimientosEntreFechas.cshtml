@@ -6,7 +6,7 @@
 <h1 class="text-center">Obtener Movimientos Por Fecha</h1>
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="ObtenerMovimientosEntreFechas">
+        <form asp-action="ObtenerMovimientosEntreFechasBusqueda">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>            
             <div class="form-group">
                 <label for="fechaInicial">Ingrese la primer fecha</label>
@@ -42,47 +42,7 @@
     </div>
 }
 
-@if (ViewBag.articulosAMostrar != null)
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th>
-                    Nombre de Articulo
-                </th>
-                <th>
-                    Id de articulo
-                </th>
-                <th>
-                    Codigo de articulo
-                </th>
-                <th>
-                    Descripcion
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var articulo in ViewBag.articulosAMostrar)
-            {
-                <tr>
-                    <td>
-                        @articulo.Nombre
-                    </td>
-                    <td>
-                        @articulo.Id
-                    </td>
-                    <td>
-                        @articulo.Codigo
-                    </td>
-                    <td>
-                        @articulo.Descripcion
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
 
-}
 
 
 

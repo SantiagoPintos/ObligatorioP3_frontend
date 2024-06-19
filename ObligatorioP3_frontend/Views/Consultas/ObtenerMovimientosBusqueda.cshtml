@@ -45,12 +45,16 @@
             }
         </tbody>
     </table>
-    <form method="post" action="~/Consultas/Next">
-        <input type="submit" value="Siguiente" />
-    </form>
-    <form method="post" action="~/Consultas/Previous">
-        <input type="submit" value="Anterior">
-    </form>
+    <div class="d-flex">
+
+        <form method="post" action="~/Consultas/Previous">
+            <input type="submit" value="Anterior" class="">
+        </form>
+        <form method="post" action="~/Consultas/Next">
+            <input type="submit" value="Siguiente" class="mx-3"/>
+        </form>
+        
+    </div>
 }
 @if (ViewBag.mensaje != null)
 {

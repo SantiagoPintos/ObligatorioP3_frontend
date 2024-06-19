@@ -1,0 +1,72 @@
+﻿
+@{
+    ViewData["Title"] = "ObtenerMovimientosEntreFechasBusqueda";
+}
+
+<h1 class="text-center">Obtener Movimientos Entre Fechas Busqueda</h1>
+
+@if (ViewBag.articulosAMostrar != null)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Nombre de Articulo
+                </th>
+                <th>
+                    Id de articulo
+                </th>
+                <th>
+                    Codigo de articulo
+                </th>
+                <th>
+                    Descripcion
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var articulo in ViewBag.articulosAMostrar)
+            {
+                <tr>
+                    <td>
+                        @articulo.Nombre
+                    </td>
+                    <td>
+                        @articulo.Id
+                    </td>
+                    <td>
+                        @articulo.Codigo
+                    </td>
+                    <td>
+                        @articulo.Descripcion
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <div class="d-flex">
+        <form method="post" action="~/Consultas/PreviousBuscarEntreFechas">
+            <input type="submit" value="Anterior">
+        </form>
+        <form method="post" action="~/Consultas/NextBuscarEntreFechas">
+            <input type="submit" value="Siguiente" />
+        </form>
+    </div>
+}
+
+
+<div>
+    <a asp-controller="Consultas" class="btn btn-danger" asp-action="Index">Volver atras</a>
+</div>
+@if (ViewBag.mensaje != null)
+{
+    <div class="text-center alert-success p-3">
+        @ViewBag.mensaje
+    </div>
+}
+@if (ViewBag.mensajeError != null)
+{
+    <div class="text-center alert-danger p-3">
+        @ViewBag.mensajeError
+    </div>
+}
