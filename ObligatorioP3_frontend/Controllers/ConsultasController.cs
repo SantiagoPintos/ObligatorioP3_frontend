@@ -26,6 +26,9 @@ namespace ObligatorioP3_frontend.Controllers
         }
         public IActionResult Index()
         {
+            string token = HttpContext.Session.GetString("Token");
+            if (token == null) return RedirectToAction("Login", "Home");
+            _cliente.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             _articuloId = -1;
             _paginaActual = -1;
             _tipoMovimientoNombre = null;

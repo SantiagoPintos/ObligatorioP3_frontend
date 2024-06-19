@@ -26,15 +26,7 @@ namespace ObligatorioP3_frontend.Controllers
             {
                 string token = HttpContext.Session.GetString("Token");
                 if (token == null) return RedirectToAction("Login", "Home");
-                _cliente.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                Uri uri = new Uri(_url+"Login/Login");
-                HttpRequestMessage solicitud = new HttpRequestMessage(HttpMethod.Post, uri);                                    
-                Task<HttpResponseMessage> respuesta = _cliente.SendAsync(solicitud);
-                respuesta.Wait();
-                if (respuesta.Result.IsSuccessStatusCode)
-                {
-                    return RedirectToAction("Index", "Usuario");
-                }           
+                _cliente.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);        
                 return RedirectToAction("Login", "Home");
             }
             catch (Exception e)

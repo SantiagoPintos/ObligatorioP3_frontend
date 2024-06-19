@@ -25,11 +25,17 @@ namespace ObligatorioP3_frontend.Controllers
         // GET: MovimientoController
         public ActionResult Index()
         {
+            string token = HttpContext.Session.GetString("Token");
+            if (token == null) return RedirectToAction("Login", "Home");
+            _cliente.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             return View();
         }
 
         public ActionResult VolverAlInicio()
         {
+            string token = HttpContext.Session.GetString("Token");
+            if (token == null) return RedirectToAction("Login", "Home");
+            _cliente.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             return RedirectToAction("Index", "Usuario");
         }
 
